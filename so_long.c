@@ -6,7 +6,7 @@
 /*   By: abdel-ma <abdel-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:56:00 by abdel-ma          #+#    #+#             */
-/*   Updated: 2024/06/07 22:24:24 by abdel-ma         ###   ########.fr       */
+/*   Updated: 2024/06/26 09:54:09 by abdel-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,24 +42,14 @@ int main(int argc, char **argv)
     win.col = col_size(&win, fd_x);
     fd = open(argv[1], O_RDONLY);
     get_maps(&win, fd);
+    init_validations(&win, fd_map);
+    if (win.col == -1)
+        ft_exit("EEError\n", &win);
+    close(fd_x);
+    close(fd_y);
+    close(fd);
+    close(fd_map);
+    player_position(&win);
+    start_game(&win);
     
-    
-
-    init_window(&win);
-    load_images(&win);
-
-    // Create background
-    create_background(&win);
-
-    // Put character image in the window
-    mlx_put_image_to_window(win.mlx, win.win, win.img, 100, 100);
-
-    // Set hooks
-    mlx_key_hook(win.win, key_hook, &win);
-    mlx_hook(win.win, 17, 0, close_win, &win);
-
-    // Start the event loop
-    mlx_loop(win.mlx);
-
-    return 0;
 }

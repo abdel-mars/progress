@@ -6,7 +6,7 @@
 /*   By: abdel-ma <abdel-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 22:18:39 by abdel-ma          #+#    #+#             */
-/*   Updated: 2024/06/07 22:44:35 by abdel-ma         ###   ########.fr       */
+/*   Updated: 2024/06/26 09:55:28 by abdel-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	get_maps(t_win *win, int fd)
 
 	i = 0;
 	y = win->line + 1;
-	win->map = (char **)malloc(sizeof(char *) * y);
+	win->map = malloc(sizeof(char *) * y);
 	if (!win->map)
 		ft_exit("Error\n", win);
 	while (i < y)
@@ -120,6 +120,26 @@ static void	ft_walls(t_win *win)
 	}
 }
 
+void	map_path_allocation(t_win *win, int fd)
+{
+	int		i;
+	char	*c;
+	int		y;
+
+	i = 0;
+	y = win->line + 1;
+	win->map_fill = (char **)malloc(sizeof(char *) * y);
+	if (!win->map_fill)
+		free_img(win);
+	while (i < y)
+	{
+		c = get_next_line(fd);
+		win->map_fill[i] = ft_strtrim(c, "\n");
+		i++;
+		free(c);
+	}
+}
+
 
 void	valid_map(t_win *win)
 {
@@ -140,10 +160,59 @@ void	valid_map(t_win *win)
 	ft_walls(win);
 }
 
+bool	fill(t_win *win, char c, int line, int col)
+{
+	static bool		exit = false;
+	static int		cols = 0;
+
+	if (line < 0 || col < 0 || line >= win->line || col >= win->col)
+		return (false);
+	else if (win->map_fill[line][col] == 'X')
+		return (false);
+	else if (win->map_fill[line][col] == '1')
+		return (false);
+	else if (win->map_fill[line][col] == 'E')
+		exit = true;
+	if (win->map_fill[line][col] == 'C')
+		cols++;
+	win->map_fill[line][col] = 'X';
+	fill(win, c, line + 1, col);
+	fill(win, c, line, col + 1);
+	fill(win, c, line - 1, col);
+	fill(win, c, line, col - 1);
+	return (cols == win->score && exit);
+}
+
+int	floodfill(t_win *win)
+{
+	char	b;
+	int		line;
+	int		col;
+	bool	valid;
+
+	b = win->map_fill[win->player_y][win->player_x];
+	line = win->player_y;
+	col = win->player_x;
+	valid = fill(win, b, line, col);
+	return (valid);
+}
+
+void	valid_path(t_win *win, int fd)
+{
+	map_path_allocation(win, fd);
+	if (!floodfill(win))
+	{
+		ft_printf ("Error\nInvalid path to on the map\n");
+		free_img(win);
+		close(fd);
+	}
+	free_map_fill(win);	
+}
+
 void init_validations(t_win *win, int fd)
 {
     ft_printf("init validation...\n");
     check_map(win);
     valid_map(win);
-    valid_path(win);
+    valid_path(win, fd);
 }
