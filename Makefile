@@ -1,14 +1,4 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: abdel-ma <abdel-ma@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/05/16 21:30:56 by abdel-ma          #+#    #+#              #
-#    Updated: 2024/06/07 22:20:54 by abdel-ma         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+
 
 NAME		=	so_long
 CC			=	gcc
@@ -18,9 +8,15 @@ LBFT			=	libft/libft.aS
 INC			=	-I ./inc -I ./libft -I ./mlx
 LIB			=	-L ./libft -lft -L ./mlx -lmlx -lXext -lX11 -lm -lbsd
 OBJ			=	$(patsubst src%, obj%, $(SRC:.c=.o))
-SRC			=	so_long.c \
-				window.c \
-				map.c \
+SRC			=	src/so_long.c \
+				src/game_end.c \
+				src/map_init.c \
+				src/moves.c \
+				src/validate_path.c \
+				src/validate_game.c \
+				src/render_img.c \
+				src/map_size.c \
+				
 				
 all:		$(MLX) $(LBFT) obj $(NAME)
 
